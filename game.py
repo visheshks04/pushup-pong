@@ -4,6 +4,7 @@ import sys
 import random
 import time
 from PoseTracker import PoseTracker
+import numpy as np
 
 def update_ball_position():
     global ball_speed_x, ball_speed_y, hits
@@ -24,8 +25,13 @@ def update_ball_position():
         ball_speed_x *= -1
 
 
-def update_player_position():
-    player.y += player_speed
+def update_player_position(net_distance):
+
+    MAX_PUSHUP_HEIGHT = 0.7
+    MIN_PUSHUP_HEIGHT = 0.05
+    PUSHUP_RANGE = MAX_PUSHUP_HEIGHT - MIN_PUSHUP_HEIGHT
+
+    player.y = screen_height * ((PUSHUP_RANGE-net_distance)/PUSHUP_RANGE)
 
     if player.top <= 0:
         player.top = 0
@@ -46,21 +52,21 @@ def game_restart():
     ball_speed_x *= random.choice((1,-1))
     ball_speed_y *= random.choice((1,-1))
 
-    player.center = (screen_width, screen_height/2)
-    player.right = screen_width
+    player.x = screen_width-10
+    player.y = screen_height/2 - 70
 
-    opponent.center = (0, screen_height/2)
-    opponent.left = 0
+    opponent.x = 0
+    opponent.y = screen_height/2 - 70
     time.sleep(1)
 
 def has_lost():
     global points
-    if ball.left <= 0:
+    if ball.left <= 0 and not (ball.bottom >= opponent.top and ball.top <= opponent.bottom):
         print('You won!')
         points[1] += 1
         game_restart()
 
-    if ball.right >= screen_width:
+    if ball.right >= screen_width and not (ball.bottom >= player.top and ball.top <= player.bottom):
         print('Opponent won!')
         points[0] += 1
         game_restart()
@@ -90,13 +96,12 @@ ball = pygame.Rect(screen_width/2 - 15, screen_height/2-15, 30, 30)
 player = pygame.Rect(screen_width-10, screen_height/2 - 70, 10, 140)
 opponent = pygame.Rect(0, screen_height/2 - 70, 10, 140)
 
-ball_speed_x = 7 * random.choice((1,-1))
-ball_speed_y = 7 * random.choice((1,-1))
+ball_speed_x = 15 * random.choice((1,-1))
+ball_speed_y = 15 * random.choice((1,-1))
 
-player_speed = 0
 points = [0,0]
 hits = 0
-opponent_speed = 5
+opponent_speed = 13
 
 detector = PoseTracker()
 
@@ -106,33 +111,28 @@ while True:
     previous_time = time.time()
     detector.detect()
     detector.display()
+    left_distance = detector.y_distance(0,16)
+    right_distance = detector.y_distance(0,15)
+
+    net_distance =(left_distance + right_distance) / 2
+    
     current_time = time.time()
     fps = 1/(current_time-previous_time)
     print(f'FPS: {fps}')
     cv.waitKey(1)
 
 
-    ## GAME LOOP
 
+
+    ## GAME LOOP
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
-                player_speed += 7
-            if event.key == pygame.K_UP:
-                player_speed -= 7
-
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_DOWN:
-                player_speed -= 7
-            if event.key == pygame.K_UP:
-                player_speed += 7
 
     has_lost()
-    update_player_position()
+    update_player_position(net_distance)
     update_opponent_position()
     update_ball_position()
 
@@ -153,4 +153,3 @@ while True:
 
 
     pygame.display.flip()
-    clock.tick(60)

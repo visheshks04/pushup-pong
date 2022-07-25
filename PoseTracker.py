@@ -68,4 +68,5 @@ if __name__ == '__main__':
         current_time = time.time()
         fps = 1/(current_time-previous_time)
         print(f'FPS: {fps}')
+
         cv.waitKey(1)
