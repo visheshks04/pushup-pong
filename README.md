@@ -1,6 +1,6 @@
 # Pushup Tracker
 
-Tracks the number of pushups so you cannot hurry or cheat your form. :)
+Classic Pong game with a twist that it is controlled through your pushups.
 
 ## Setup and running
 
