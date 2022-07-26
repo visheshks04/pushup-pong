@@ -30,31 +30,48 @@ class PoseTracker:
     def get_euclidean_distance(self, l1_index, l2_index):
         h, w, _ = self.shape
 
-        l1 = self.results.pose_landmarks.landmark[l1_index]
-        l2 = self.results.pose_landmarks.landmark[l2_index]
 
-        l1x = l1.x * w
-        l2x = l2.x * w
+        try:
+            l1 = self.results.pose_landmarks.landmark[l1_index]
+            l2 = self.results.pose_landmarks.landmark[l2_index]
 
-        l1y = l1.y * h
-        l2y = l2.y * h
+            l1x = l1.x * w
+            l2x = l2.x * w
 
-        distance = abs(l1x - l2x), abs(l1y - l2y)
+            l1y = l1.y * h
+            l2y = l2.y * h
 
-        euclidean = np.sqrt(distance[0]**2 + distance[1]**2)
-        return euclidean
+            distance = abs(l1x - l2x), abs(l1y - l2y)
+
+            euclidean = np.sqrt(distance[0]**2 + distance[1]**2)
+            return euclidean
+
+        except:
+            print('Cannot detect landmarks!')
 
     def y_distance(self, l1_index, l2_index):
-        l1 = self.results.pose_landmarks.landmark[l1_index]
-        l2 = self.results.pose_landmarks.landmark[l2_index]
 
-        return abs(l1.y - l2.y)
+        try:
+            l1 = self.results.pose_landmarks.landmark[l1_index]
+            l2 = self.results.pose_landmarks.landmark[l2_index]
+
+            return abs(l1.y - l2.y)
+
+        except:
+            print('Cannot detect landmarks!')
+
 
     def x_distance(self, l1_index, l2_index):
-        l1 = self.results.pose_landmarks.landmark[l1_index]
-        l2 = self.results.pose_landmarks.landmark[l2_index]
 
-        return abs(l1.x - l2.x)
+        try:
+            l1 = self.results.pose_landmarks.landmark[l1_index]
+            l2 = self.results.pose_landmarks.landmark[l2_index]
+
+            return abs(l1.x - l2.x)
+
+        except:
+            print('Cannot detect landmarks!')
+
 
 
 

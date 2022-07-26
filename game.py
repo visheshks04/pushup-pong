@@ -111,10 +111,14 @@ while True:
     previous_time = time.time()
     detector.detect()
     detector.display()
-    left_distance = detector.y_distance(0,16)
-    right_distance = detector.y_distance(0,15)
 
-    net_distance =(left_distance + right_distance) / 2
+    try:
+        left_distance = detector.y_distance(0,16)
+        right_distance = detector.y_distance(0,15)
+
+        net_distance =(left_distance + right_distance) / 2
+    except:
+        print("Position yourself right!")
     
     current_time = time.time()
     fps = 1/(current_time-previous_time)
